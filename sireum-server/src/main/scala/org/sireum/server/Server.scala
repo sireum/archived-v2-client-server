@@ -139,7 +139,8 @@ object Server {
 
   val additionalPlugins : ISeq[Plugin] = {
     ivector(
-      "SymbologicsPlugin", "SymbologicsWsPlugin", "EchoProcessPlugin"
+      "SymbologicsPlugin", "SymbologicsWsPlugin",
+      "BakarKiasanPlugin", "BakarKiasanProcessPlugin", "BakarKiasanWsPlugin"
     ).flatMap(x =>
         try {
           Some(Class.forName("org.sireum.server.plugin." + x).newInstance.
