@@ -66,7 +66,7 @@ object Server {
   /**
    * @author <a href="mailto:robby@k-state.edu">Robby</a>
    */
-  trait ProcessPlugin extends Plugin {
+  abstract class ProcessPlugin extends Plugin {
     def name : String
     def run(message : String) : Option[String]
   }
@@ -74,7 +74,7 @@ object Server {
   /**
    * @author <a href="mailto:robby@k-state.edu">Robby</a>
    */
-  trait ResourcePlugin extends Plugin {
+  abstract class ResourcePlugin extends Plugin {
     def contextPath : String
     def uri : ResourceUri
   }
@@ -82,7 +82,7 @@ object Server {
   /**
    * @author <a href="mailto:robby@k-state.edu">Robby</a>
    */
-  trait WsPlugin extends Plugin {
+  abstract class WsPlugin extends Plugin {
     def eventClass : Class[_]
   }
 
@@ -224,7 +224,7 @@ class Server(port : Int) extends Logging {
       processPlugins.get(name) match {
         case Some(p) => p.run(msg)
         case _ =>
-          logger.error(s"Process plugin named '$name' is not available")
+          logger.debug(s"Process plugin named '$name' is not available")
           None
       }
     }
