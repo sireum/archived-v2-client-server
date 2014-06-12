@@ -181,7 +181,7 @@ class Server(port : Int) extends Logging {
     webSocketContext.setContextPath("/ws")
     handlers.addHandler(webSocketContext)
 
-    for (p <- plugins) {
+    for (p <- plugins if p.enabled) {
       logger.debug(s"Found plugin: ${p.name}")
       p match {
         case p : ProcessPlugin =>
