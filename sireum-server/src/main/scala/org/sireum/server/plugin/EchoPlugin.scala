@@ -18,6 +18,7 @@ import org.sireum.util._
  * @author <a href="mailto:robby@k-state.edu">Robby</a>
  */
 class EchoProcessPlugin extends Server.ProcessPlugin with Logging {
+  override def enabled = false
   val name = "echo"
   def run(message : String) = Some(message)
 }

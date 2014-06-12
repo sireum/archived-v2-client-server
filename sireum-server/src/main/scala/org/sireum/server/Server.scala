@@ -67,7 +67,6 @@ object Server {
    * @author <a href="mailto:robby@k-state.edu">Robby</a>
    */
   abstract class ProcessPlugin extends Plugin {
-    def name : String
     def run(message : String) : Option[String]
   }
 
@@ -139,7 +138,8 @@ object Server {
 
   val additionalPlugins : ISeq[Plugin] = {
     ivector(
-      "SymbologicsPlugin", "SymbologicsWsPlugin",
+      "EchoProcessPlugin", "EchoWsPlugin",   
+      "SymbologicsPlugin", "SymbologicsWsPlugin", 
       "BakarKiasanPlugin", "BakarKiasanProcessPlugin", "BakarKiasanWsPlugin"
     ).flatMap(x =>
         try {
