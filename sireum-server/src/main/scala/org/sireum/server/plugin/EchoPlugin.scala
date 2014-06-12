@@ -17,13 +17,21 @@ import org.sireum.util._
 /**
  * @author <a href="mailto:robby@k-state.edu">Robby</a>
  */
+class EchoProcessPlugin extends Server.ProcessPlugin with Logging {
+  val name = "echo"
+  def run(message : String) = Some(message)
+}
+
+/**
+ * @author <a href="mailto:robby@k-state.edu">Robby</a>
+ */
 @ServerEndpoint(value = "/echo/")
-class EchoPlugin extends WebServer.WsPlugin with Logging {
+class EchoWsPlugin extends Server.WsPlugin with Logging {
   override def enabled = false
   def name = "echo"
-  
-  val eventClass : Class[_] = classOf[EchoPlugin]
-  
+
+  val eventClass : Class[_] = classOf[EchoWsPlugin]
+
   @OnOpen
   def onConnect(sess : Session) {
     logger.info("Socket Connected: " + sess)
