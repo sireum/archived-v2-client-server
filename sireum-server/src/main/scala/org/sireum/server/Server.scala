@@ -186,6 +186,8 @@ class Server(port : Int) extends Logging {
       new ServletContextHandler(ServletContextHandler.SESSIONS)
     webSocketContext.setContextPath("/ws")
     handlers.addHandler(webSocketContext)
+    val webSocketContainer = WebSocketServerContainerInitializer.
+            configureContext(webSocketContext)
 
     for (p <- plugins if p.enabled) {
       logger.debug(s"Found plugin: ${p.name}")
@@ -210,9 +212,7 @@ class Server(port : Int) extends Logging {
             handlers.addHandler(contextHandler)
           }
         case p : WsPlugin =>
-          WebSocketServerContainerInitializer.
-            configureContext(webSocketContext).
-            addEndpoint(p.eventClass)
+          webSocketContainer.addEndpoint(p.eventClass)
       }
     }
 
