@@ -23,6 +23,40 @@ import org.sireum.option.LaunchServerMode
  * @author <a href="mailto:robby@k-state.edu">Robby</a>
  */
 object Server {
+  val defaultPlugins : ISeq[Plugin] = {
+    libPath(getClass) match {
+      case Some(libPath) =>
+        val libDir = FileUtil.toFile(libPath)
+        ivector(
+          "ace", "extjs", "font-awesome", "mathjax", "miscjs"
+        ).map { x =>
+            DefaultPlugin(x, "/" + x,
+              FileUtil.toUri(new File(libDir, x + ".jar")))
+          }.+:(DefaultPlugin("sireum-play", "/",
+            FileUtil.toUri(new File(libDir, "sireum-play.jar")))).
+          filter { p =>
+            FileUtil.toFile(p.uri).exists
+          }
+      case _ =>
+        ivector()
+    }
+  }
+
+  val additionalPlugins : ISeq[Plugin] = {
+    ivector(
+      "EchoProcessPlugin", "EchoWsPlugin",   
+      "SymbologicsPlugin", "SymbologicsWsPlugin", 
+      "BakarKiasanPlugin", "BakarKiasanProcessPlugin", "BakarKiasanWsPlugin"
+    ).flatMap(x =>
+        try {
+          Some(Class.forName("org.sireum.server.plugin." + x).newInstance.
+            asInstanceOf[Plugin])
+        } catch {
+          case e : Exception => None
+        }
+      )
+  }
+  
   def main(args : Array[String]) {
     val o =
       args match {
@@ -32,8 +66,12 @@ object Server {
 
     run(o)
   }
-
+  
   def run(option : LaunchServerMode) {
+    run(option, {})
+  }
+
+  def run(option : LaunchServerMode, f : => Unit) {
     val server = new Server(option.port)
     server.start
     if (!option.quiet) {
@@ -41,6 +79,7 @@ object Server {
       System.out.println("Press 'x' and hit 'Enter' to exit.")
       System.out.flush
     }
+    f
     val lnr = new LineNumberReader(new InputStreamReader(System.in))
     var l = lnr.readLine
     while (l != null && l.trim != "x") {
@@ -94,24 +133,6 @@ object Server {
       uri : ResourceUri) extends ResourcePlugin {
   }
 
-  val defaultPlugins : ISeq[Plugin] = {
-    libPath(getClass) match {
-      case Some(libPath) =>
-        val libDir = FileUtil.toFile(libPath)
-        ivector(
-          "ace", "extjs", "font-awesome", "mathjax", "miscjs"
-        ).map { x =>
-            DefaultPlugin(x, "/" + x,
-              FileUtil.toUri(new File(libDir, x + ".jar")))
-          }.+:(DefaultPlugin("sireum-play", "/",
-            FileUtil.toUri(new File(libDir, "sireum-play.jar")))).
-          filter { p =>
-            FileUtil.toFile(p.uri).exists
-          }
-      case _ =>
-        ivector()
-    }
-  }
 
   def sireumHomeLibPath = {
     val sireumHome = System.getenv("SIREUM_HOME")
@@ -134,21 +155,6 @@ object Server {
     } catch {
       case _ : Exception => sireumHomeLibPath
     }
-  }
-
-  val additionalPlugins : ISeq[Plugin] = {
-    ivector(
-      "EchoProcessPlugin", "EchoWsPlugin",   
-      "SymbologicsPlugin", "SymbologicsWsPlugin", 
-      "BakarKiasanPlugin", "BakarKiasanProcessPlugin", "BakarKiasanWsPlugin"
-    ).flatMap(x =>
-        try {
-          Some(Class.forName("org.sireum.server.plugin." + x).newInstance.
-            asInstanceOf[Plugin])
-        } catch {
-          case e : Exception => None
-        }
-      )
   }
 }
 
