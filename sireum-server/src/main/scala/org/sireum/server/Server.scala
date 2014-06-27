@@ -72,23 +72,19 @@ object Server {
   }
 
   def run(option : LaunchServerMode, f : => Unit) {
+    val pw = new PrintWriter(System.out)
     val server = new Server(option.port)
     if (server.start) {
       if (!option.quiet) {
-        System.out.println(s"Running server at port: ${option.port}")
-        System.out.println("Press 'x' and hit 'Enter' to exit.")
-        System.out.flush
+        pw.println(s"Running server at port: ${option.port}")
+        pw.println("Press 'x' and hit 'Enter' to exit.")
+        pw.flush
       }
       f
       val lnr = new LineNumberReader(new InputStreamReader(System.in))
       var l = lnr.readLine
       while (l != null && l.trim != "x") {
-        server.process(l) match {
-          case Some(m) =>
-            System.out.println(m)
-            System.out.flush
-          case _ =>
-        }
+        server.process(l, pw)
         l = lnr.readLine
       }
       server.stop
@@ -107,7 +103,7 @@ object Server {
    * @author <a href="mailto:robby@k-state.edu">Robby</a>
    */
   abstract class ProcessPlugin extends Plugin {
-    def run(message : String) : Option[String]
+    def run(message : String, out : PrintWriter)
   }
 
   /**
@@ -241,14 +237,14 @@ class Server(port : Int) extends Logging {
     }
   }
 
-  def process(message : String) : Option[String] = {
+  def process(message : String, pw : PrintWriter) {
     val i = message.indexOf(':')
     if (i < 0) None
     else {
       val name = message.substring(0, i).trim
       val msg = message.substring(i + 1)
       processPlugins.get(name) match {
-        case Some(p) => p.run(msg)
+        case Some(p) => p.run(msg, pw)
         case _ =>
           logger.debug(s"Process plugin named '$name' is not available")
           None
