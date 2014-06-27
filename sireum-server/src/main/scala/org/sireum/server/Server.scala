@@ -44,8 +44,8 @@ object Server {
 
   val additionalPlugins : ISeq[Plugin] = {
     ivector(
-      "EchoProcessPlugin", "EchoWsPlugin",   
-      "SymbologicsPlugin", "SymbologicsWsPlugin", 
+      "EchoProcessPlugin", "EchoWsPlugin",
+      "SymbologicsPlugin", "SymbologicsWsPlugin",
       "BakarKiasanPlugin", "BakarKiasanProcessPlugin", "BakarKiasanWsPlugin"
     ).flatMap(x =>
         try {
@@ -56,7 +56,7 @@ object Server {
         }
       )
   }
-  
+
   def main(args : Array[String]) {
     val o =
       args match {
@@ -66,32 +66,33 @@ object Server {
 
     run(o)
   }
-  
+
   def run(option : LaunchServerMode) {
     run(option, {})
   }
 
   def run(option : LaunchServerMode, f : => Unit) {
     val server = new Server(option.port)
-    server.start
-    if (!option.quiet) {
-      System.out.println(s"Running server at port: ${option.port}")
-      System.out.println("Press 'x' and hit 'Enter' to exit.")
-      System.out.flush
-    }
-    f
-    val lnr = new LineNumberReader(new InputStreamReader(System.in))
-    var l = lnr.readLine
-    while (l != null && l.trim != "x") {
-      server.process(l) match {
-        case Some(m) =>
-          System.out.println(m)
-          System.out.flush
-        case _ =>
+    if (server.start) {
+      if (!option.quiet) {
+        System.out.println(s"Running server at port: ${option.port}")
+        System.out.println("Press 'x' and hit 'Enter' to exit.")
+        System.out.flush
       }
-      l = lnr.readLine
+      f
+      val lnr = new LineNumberReader(new InputStreamReader(System.in))
+      var l = lnr.readLine
+      while (l != null && l.trim != "x") {
+        server.process(l) match {
+          case Some(m) =>
+            System.out.println(m)
+            System.out.flush
+          case _ =>
+        }
+        l = lnr.readLine
+      }
+      server.stop
     }
-    server.stop
   }
 
   /**
@@ -133,7 +134,6 @@ object Server {
       uri : ResourceUri) extends ResourcePlugin {
   }
 
-
   def sireumHomeLibPath = {
     val sireumHome = System.getenv("SIREUM_HOME")
     if (sireumHome != null) {
@@ -169,7 +169,18 @@ class Server(port : Int) extends Logging {
 
   def this() = this(LaunchServerMode().port)
 
-  def start {
+  private def portAvailable(port : Int) : Boolean = {
+    try {
+      val ignored = new Socket("localhost", port)
+      ignored.close
+      false
+    } catch {
+      case _ : IOException =>
+        true
+    }
+  }
+
+  def start : Boolean = {
 
     import Server._
 
@@ -187,7 +198,7 @@ class Server(port : Int) extends Logging {
     webSocketContext.setContextPath("/ws")
     handlers.addHandler(webSocketContext)
     val webSocketContainer = WebSocketServerContainerInitializer.
-            configureContext(webSocketContext)
+      configureContext(webSocketContext)
 
     for (p <- plugins if p.enabled) {
       logger.debug(s"Found plugin: ${p.name}")
@@ -216,10 +227,18 @@ class Server(port : Int) extends Logging {
       }
     }
 
-    server.start
-    logger.debug("Sireum server has been started")
-
-    this.server = Some(server)
+    try {
+      server.start
+      logger.debug("Sireum server has been started")
+      this.server = Some(server)
+      true
+    } catch {
+      case _ : java.net.BindException =>
+        System.err.println(s"Port $port is unavailable")
+        System.err.flush
+        server.stop
+        false
+    }
   }
 
   def process(message : String) : Option[String] = {
