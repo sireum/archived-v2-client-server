@@ -20,7 +20,8 @@ import org.sireum.util._
 class EchoProcessPlugin extends Server.ProcessPlugin with Logging {
   override def enabled = false
   val name = "echo"
-  def run(message : String, out : java.io.PrintWriter) {
+  var out : java.io.PrintStream = _
+  def run(message : String) {
     out.println(message)
     out.flush
   }

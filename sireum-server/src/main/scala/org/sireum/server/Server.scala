@@ -72,7 +72,7 @@ object Server {
   }
 
   def run(option : LaunchServerMode, f : => Unit) {
-    val pw = new PrintWriter(System.out)
+    val pw = System.out
     val server = new Server(option.port)
     if (server.start) {
       if (!option.quiet) {
@@ -84,7 +84,7 @@ object Server {
       val lnr = new LineNumberReader(new InputStreamReader(System.in))
       var l = lnr.readLine
       while (l != null && l.trim != "x") {
-        server.process(l, pw)
+        server.process(l)
         l = lnr.readLine
       }
       server.stop
@@ -103,7 +103,8 @@ object Server {
    * @author <a href="mailto:robby@k-state.edu">Robby</a>
    */
   abstract class ProcessPlugin extends Plugin {
-    def run(message : String, out : PrintWriter)
+    var out : PrintStream
+    def run(message : String)
   }
 
   /**
@@ -200,6 +201,7 @@ class Server(port : Int) extends Logging {
       logger.debug(s"Found plugin: ${p.name}")
       p match {
         case p : ProcessPlugin =>
+          p.out = System.out
           processPlugins += (p.name -> p)
         case p : ResourcePlugin =>
           if (p.uri.endsWith(".jar")) {
@@ -237,14 +239,14 @@ class Server(port : Int) extends Logging {
     }
   }
 
-  def process(message : String, pw : PrintWriter) {
+  def process(message : String) {
     val i = message.indexOf(':')
     if (i < 0) None
     else {
       val name = message.substring(0, i).trim
       val msg = message.substring(i + 1)
       processPlugins.get(name) match {
-        case Some(p) => p.run(msg, pw)
+        case Some(p) => p.run(msg)
         case _ =>
           logger.debug(s"Process plugin named '$name' is not available")
           None
