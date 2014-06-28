@@ -82,19 +82,21 @@ object Server {
       }
       f
       val lnr = new LineNumberReader(new InputStreamReader(System.in))
-      var l = lnr.readLine
-      while (l != null && l.trim != "x") {
-        server.process(l)
-        l = lnr.readLine
-      }
-      server.stop
+      try {
+        var l = lnr.readLine
+        while (l != null && l.trim != "x") {
+          server.process(l)
+          l = lnr.readLine
+        }
+      } finally
+        server.stop
     }
   }
 
   /**
    * @author <a href="mailto:robby@k-state.edu">Robby</a>
    */
-  trait Plugin {
+  trait Plugin extends Closeable {
     def name : String
     def enabled = true
   }
@@ -129,6 +131,7 @@ object Server {
       name : String,
       contextPath : String,
       uri : ResourceUri) extends ResourcePlugin {
+    def close {}
   }
 
   def sireumHomeLibPath = {
@@ -164,6 +167,8 @@ class Server(port : Int) extends Logging {
 
   private var processPlugins : IMap[String, Server.ProcessPlugin] = imapEmpty
 
+  var terminated = false
+
   def this() = this(LaunchServerMode().port)
 
   private def portAvailable(port : Int) : Boolean = {
@@ -197,31 +202,33 @@ class Server(port : Int) extends Logging {
     val webSocketContainer = WebSocketServerContainerInitializer.
       configureContext(webSocketContext)
 
-    for (p <- plugins if p.enabled) {
-      logger.debug(s"Found plugin: ${p.name}")
-      p match {
-        case p : ProcessPlugin =>
-          p.out = System.out
-          processPlugins += (p.name -> p)
-        case p : ResourcePlugin =>
-          if (p.uri.endsWith(".jar")) {
-            val webAppContext = new WebAppContext
-            webAppContext.setInitParameter(
-              "org.eclipse.jetty.servlet.Default.dirAllowed", "false")
-            webAppContext.setServer(server)
-            webAppContext.setContextPath(p.contextPath)
-            webAppContext.setWar(FileUtil.toFile(p.uri).toURI.toURL.toString)
-            handlers.addHandler(webAppContext)
-          } else {
-            val resourceHandler = new ResourceHandler
-            resourceHandler.setDirectoriesListed(false)
-            resourceHandler.setResourceBase(FileUtil.toFile(p.uri).getCanonicalPath)
-            val contextHandler = new ContextHandler(p.contextPath)
-            contextHandler.setHandler(resourceHandler)
-            handlers.addHandler(contextHandler)
-          }
-        case p : WsPlugin =>
-          webSocketContainer.addEndpoint(p.eventClass)
+    for (p <- plugins) {
+      if (p.enabled) {
+        logger.debug(s"Found plugin: ${p.name}")
+        p match {
+          case p : ProcessPlugin =>
+            p.out = System.out
+            processPlugins += (p.name -> p)
+          case p : ResourcePlugin =>
+            if (p.uri.endsWith(".jar")) {
+              val webAppContext = new WebAppContext
+              webAppContext.setInitParameter(
+                "org.eclipse.jetty.servlet.Default.dirAllowed", "false")
+              webAppContext.setServer(server)
+              webAppContext.setContextPath(p.contextPath)
+              webAppContext.setWar(FileUtil.toFile(p.uri).toURI.toURL.toString)
+              handlers.addHandler(webAppContext)
+            } else {
+              val resourceHandler = new ResourceHandler
+              resourceHandler.setDirectoriesListed(false)
+              resourceHandler.setResourceBase(FileUtil.toFile(p.uri).getCanonicalPath)
+              val contextHandler = new ContextHandler(p.contextPath)
+              contextHandler.setHandler(resourceHandler)
+              handlers.addHandler(contextHandler)
+            }
+          case p : WsPlugin =>
+            webSocketContainer.addEndpoint(p.eventClass)
+        }
       }
     }
 
@@ -255,6 +262,7 @@ class Server(port : Int) extends Logging {
   }
 
   def stop {
+    (Server.defaultPlugins ++ Server.additionalPlugins).foreach(_.close)
     server.foreach(_.stop)
     logger.debug(s"Sireum server at port $port has been stopped")
   }
@@ -278,7 +286,6 @@ class ServerDaemon {
         case _        => new LaunchServerMode()
       }
 
-    stop
     val server = new Server(o.port)
     server.start
     this.server = Some(server)

@@ -25,6 +25,7 @@ class EchoProcessPlugin extends Server.ProcessPlugin with Logging {
     out.println(message)
     out.flush
   }
+  def close {}
 }
 
 /**
@@ -57,4 +58,6 @@ class EchoWsPlugin extends Server.WsPlugin with Logging {
   def onError(cause : Throwable) {
     cause.printStackTrace(System.err)
   }
+
+  def close {}
 }
