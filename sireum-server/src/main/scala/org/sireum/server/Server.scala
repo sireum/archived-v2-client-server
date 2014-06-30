@@ -233,15 +233,15 @@ class Server(port : Int) extends Logging {
     }
 
     try {
+      this.server = Some(server)
       server.start
       logger.debug("Sireum server has been started")
-      this.server = Some(server)
       true
     } catch {
       case _ : java.net.BindException =>
         System.err.println(s"Port $port is unavailable")
         System.err.flush
-        server.stop
+        stop
         false
     }
   }
