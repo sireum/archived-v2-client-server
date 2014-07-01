@@ -274,8 +274,9 @@ class Server(port : Int, workers : Int = 1)
   }
 
   def stop {
-    executorService.shutdown
+    terminated = true
     (Server.defaultPlugins ++ Server.additionalPlugins).foreach(_.close)
+    executorService.shutdown
     server.foreach(_.stop)
     logger.debug(s"Sireum server at port $port has been stopped")
   }
