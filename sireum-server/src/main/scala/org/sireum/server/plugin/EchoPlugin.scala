@@ -26,6 +26,7 @@ class EchoProcessPlugin extends Server.ProcessPlugin with Logging {
     out.flush
   }
   def close {}
+  def setServerService(s : ServerService) {}
 }
 
 /**
@@ -60,4 +61,5 @@ class EchoWsPlugin extends Server.WsPlugin with Logging {
   }
 
   def close {}
+  def setServerService(s : ServerService) {}
 }

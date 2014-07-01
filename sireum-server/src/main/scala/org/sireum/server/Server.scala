@@ -73,7 +73,7 @@ object Server {
 
   def run(option : LaunchServerMode, f : => Unit) {
     val pw = System.out
-    val server = new Server(option.port)
+    val server = new Server(option.port, option.workers)
     if (server.start) {
       if (!option.quiet) {
         pw.println(s"Running server at port: ${option.port}")
@@ -99,6 +99,7 @@ object Server {
   trait Plugin extends Closeable {
     def name : String
     def enabled = true
+    def setServerService(s : ServerService)
   }
 
   /**
@@ -132,6 +133,7 @@ object Server {
       contextPath : String,
       uri : ResourceUri) extends ResourcePlugin {
     def close {}
+    def setServerService(s : ServerService) {}
   }
 
   def sireumHomeLibPath = {
@@ -158,14 +160,23 @@ object Server {
   }
 }
 
+trait ServerService {
+  import java.util.concurrent._
+  def executorService : ExecutorService
+  def terminated : Boolean
+}
+
 /**
  * @author <a href="mailto:robby@k-state.edu">Robby</a>
  */
-class Server(port : Int) extends Logging {
+class Server(port : Int, workers : Int = 1)
+    extends ServerService with Logging {
 
   private var server : Option[JettyServer] = None
 
   private var processPlugins : IMap[String, Server.ProcessPlugin] = imapEmpty
+
+  val executorService = java.util.concurrent.Executors.newFixedThreadPool(workers)
 
   var terminated = false
 
@@ -203,6 +214,7 @@ class Server(port : Int) extends Logging {
       configureContext(webSocketContext)
 
     for (p <- plugins) {
+      p.setServerService(this)
       if (p.enabled) {
         logger.debug(s"Found plugin: ${p.name}")
         p match {
@@ -262,6 +274,7 @@ class Server(port : Int) extends Logging {
   }
 
   def stop {
+    executorService.shutdown
     (Server.defaultPlugins ++ Server.additionalPlugins).foreach(_.close)
     server.foreach(_.stop)
     logger.debug(s"Sireum server at port $port has been stopped")
