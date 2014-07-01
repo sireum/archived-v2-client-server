@@ -178,6 +178,7 @@ class Server(port : Int, workers : Int = 1)
 
   val executorService = java.util.concurrent.Executors.newFixedThreadPool(workers)
 
+  @volatile
   var terminated = false
 
   def this() = this(LaunchServerMode().port)
