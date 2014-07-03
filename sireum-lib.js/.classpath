@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/scala"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="lib/scalajs-dom.jar" sourcepath="lib/scalajs-dom-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/scalajs-library.jar" sourcepath="lib/scalajs-library-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="/sireum-lib/elib/scala-library.jar" sourcepath="/sireum-lib/elib/scala-library-src.zip"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
