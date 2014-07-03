@@ -41,6 +41,7 @@ package object js {
   type JsAny = js.Any
   type JsObject = js.Object
   type JsUndefined = js.Undefined
+  type JsNumber = js.Number
   type JsString = js.String
   type JsArray[T] = js.Array[T]
   type JsFunction = js.Function
