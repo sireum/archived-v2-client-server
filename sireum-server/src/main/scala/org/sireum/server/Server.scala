@@ -164,6 +164,12 @@ trait ServerService {
   import java.util.concurrent._
   def executorService : ExecutorService
   def terminated : Boolean
+  def ui : Option[ServerUI]
+}
+
+trait ServerUI {
+  def mainFrame : javax.swing.JFrame
+  def fileChooser : javax.swing.JFileChooser
 }
 
 /**
@@ -171,6 +177,11 @@ trait ServerService {
  */
 class Server(port : Int, workers : Int = 1)
     extends ServerService with Logging {
+  class ServerUIImpl(
+      var mainFrame : javax.swing.JFrame,
+      var fileChooser : javax.swing.JFileChooser) extends ServerUI {
+
+  }
 
   private var server : Option[JettyServer] = None
 
@@ -178,10 +189,31 @@ class Server(port : Int, workers : Int = 1)
 
   val executorService = java.util.concurrent.Executors.newFixedThreadPool(workers)
 
+  var uiInit = false
+  var _ui : Option[ServerUIImpl] = None
+
   @volatile
   var terminated = false
 
   def this() = this(LaunchServerMode().port)
+
+  def ui = {
+    import javax.swing._
+    if (!uiInit) {
+      uiInit = true
+      try {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
+        val frame = new JFrame
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE)
+        frame.setAlwaysOnTop(true)
+        _ui = Some(new ServerUIImpl(frame, new JFileChooser))
+
+      } catch {
+        case _ : Throwable =>
+      }
+    }
+    _ui
+  }
 
   private def portAvailable(port : Int) : Boolean = {
     try {
@@ -276,6 +308,13 @@ class Server(port : Int, workers : Int = 1)
 
   def stop {
     terminated = true
+    _ui.foreach { ui =>
+      ui.fileChooser = null
+      ui.mainFrame.setVisible(false)
+      ui.mainFrame.dispose
+      ui.mainFrame = null
+    }
+    _ui = None
     (Server.defaultPlugins ++ Server.additionalPlugins).foreach(_.close)
     executorService.shutdown
     server.foreach(_.stop)
