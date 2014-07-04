@@ -68,6 +68,7 @@ package object js {
   val obj = js.Dynamic.literal
 
   def array[T](o : T*) : js.Array[T] = js.Array[T](o : _*)
+  def arraySeq[T](o : Seq[T]) : js.Array[T] = js.Array[T](o : _*)
   def emptyArray = js.Array()
 
   def fun[T0](x : Function0[T0]) : js.Function = x

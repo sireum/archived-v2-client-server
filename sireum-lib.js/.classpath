@@ -5,5 +5,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/scalajs-dom.jar" sourcepath="lib/scalajs-dom-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="lib/scalajs-library.jar" sourcepath="lib/scalajs-library-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="/sireum-lib/elib/scala-library.jar" sourcepath="/sireum-lib/elib/scala-library-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="/sireum-lib/lib/upickle.jar" sourcepath="/sireum-server/lib/upickle-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

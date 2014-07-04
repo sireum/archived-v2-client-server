@@ -38,6 +38,8 @@ object Ext extends JsObject {
   def application(o : JsDynamic) : Unit = ???
   def application(o : String) : Unit = ???
 
+  def define(kind : String, o : JsAny*) : JsObject = ???
+
   @JSName("create")
   def createT[T <: JsAny](kind : String, o : JsAny*) : T = ???
   def create(kind : String, o : JsAny*) : JsObject = ???
@@ -78,9 +80,7 @@ trait `Ext.EventObject` extends JsObject {
 
 trait `Ext.data.Store` extends JsObject {
   def count(grouped : Boolean) : Int
-}
-
-trait `Ext.data.ArrayStore` extends `Ext.data.Store` {
+  def getAt(index : Int) : JsObject
   def findBy(fn : JsFunction1[JsDynamic, Boolean]) : Int
   def findRecord(key : String, value : String) : JsObject
   def remove(record : JsDynamic)
@@ -88,7 +88,23 @@ trait `Ext.data.ArrayStore` extends `Ext.data.Store` {
   def add(o : JsDynamic)
   def removeAll()
   def loadRawData[T](a : JsArray[JsArray[T]])
-  def getAt(index : Int) : JsObject
+}
+
+trait `Ext.data.TreeStore` extends `Ext.data.Store` {
+  def setAutoSort(b : Boolean)
+  def setRoot(n : JsDynamic)
+  def getRoot() : JsObject
+}
+
+trait `Ext.data.ArrayStore` extends `Ext.data.Store` {
+}
+
+trait `Ext.data.NodeInterface` extends JsObject {
+  def sort(sortFn : JsFunction = null, recursive : Boolean = false,
+           suppressEvents : Boolean = false)
+  def appendChild(
+    node : JsDynamic, suppressEvents : Boolean = false,
+    commit : Boolean = false) : JsAny
 }
 
 trait `Ext.Img` extends JsObject {
