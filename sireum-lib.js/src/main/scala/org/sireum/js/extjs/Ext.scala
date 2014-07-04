@@ -53,6 +53,17 @@ object Ext extends JsObject {
   def os : `Ext.os` = ???
 
   def Msg : `Ext.Msg` = ???
+
+  def tip : `Ext.tip` = ???
+}
+
+trait `Ext.tip` extends JsObject {
+  def QuickTipManager : `Ext.tip.QuickTipManager`
+}
+
+trait `Ext.tip.QuickTipManager` extends JsObject {
+  def init()
+  def register(o : JsDynamic)
 }
 
 trait `Ext.Msg` extends JsObject {
