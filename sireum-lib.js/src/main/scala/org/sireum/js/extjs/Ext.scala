@@ -57,6 +57,10 @@ object Ext extends JsObject {
   def tip : `Ext.tip` = ???
 }
 
+trait `Ext.tree.Panel` extends JsObject {
+  def getSelection() : JsArray[JsObject]
+}
+
 trait `Ext.tip` extends JsObject {
   def QuickTipManager : `Ext.tip.QuickTipManager`
 }
