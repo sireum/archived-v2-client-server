@@ -9,7 +9,7 @@ import org.sireum.js.extjs._
 object JsProjectRoot {
   import JsProjectResource._
   implicit class ToJs(val p : ProjectRoot) extends AnyVal {
-    def js = obj(
+    def js(implicit mode : Mode.Type = JsProjectResource.Mode.ALL) = obj(
       expanded = true,
       children = arraySeq(p.projects)
     )
@@ -25,6 +25,7 @@ object JsProjectRoot {
       m
     }
     def projects_=(ps : Map[String, Project]) = {
+      implicit val mode = JsProjectResource.Mode.ALL
       o.data.children = arraySeq(ps)
     }
   }
@@ -34,6 +35,12 @@ object JsProjectRoot {
  * @author <a href="mailto:robby@k-state.edu">Robby</a>
  */
 object JsProjectResource {
+
+  object Mode extends Enumeration {
+    type Type = Value
+    val ALL, FOLDER, PROJECT = Value
+  }
+
   def initModel {
     Ext.define("sireum.ProjectResource", obj(
       extend = "Ext.data.TreeModel",
@@ -68,24 +75,25 @@ object JsProjectResource {
       case "ProjectFolder" => JsProjectFolder(o)
     }
   }
-  def js(r : ProjectResource) : JsDynamic =
+  def js(r : ProjectResource, mode : Mode.Type) : JsDynamic =
     r match {
-      case r : Project       => JsProject.js(r)
+      case r : Project       => JsProject.js(r, mode)
       case r : ProjectFile   => JsProjectFile.js(r)
-      case r : ProjectFolder => JsProjectFolder.js(r)
+      case r : ProjectFolder => JsProjectFolder.js(r, mode)
     }
-  def js(it : Iterable[ProjectResource]) : Seq[JsDynamic] =
-    it.toSeq.map(r => js(r))
+  def js(it : Iterable[ProjectResource], mode : Mode.Type) : Seq[JsDynamic] =
+    it.toSeq.map(r => js(r, mode))
 
   import language.implicitConversions
-  implicit def map2seq(m : Map[String, ProjectResource]) : Seq[JsDynamic] =
+  implicit def map2seq(m : Map[String, ProjectResource])(
+    implicit mode : Mode.Type) : Seq[JsDynamic] =
     m.toSeq.sortWith((kv1, kv2) =>
       (kv1._2.isFolder, kv2._2.isFolder) match {
         case (false, true) => false
         case (true, false) => true
         case _             => kv1._1.compareTo(kv2._1) <= 0
       }
-    ).map(kv => js(kv._2))
+    ).map(kv => js(kv._2, mode))
   implicit def string(v : JsDynamic) = v.asInstanceOf[String]
   implicit def int(v : JsDynamic) = v.asInstanceOf[Int]
   implicit def boolean(v : JsDynamic) = v.asInstanceOf[Boolean]
@@ -97,16 +105,27 @@ object JsProjectResource {
  */
 object JsProject {
   import JsProjectResource._
-  def js(p : Project) : JsDynamic = obj(
-    mtype = "Project",
-    text = p.name,
-    pathUri = p.pathUri,
-    name = p.name,
-    uri = p.uri,
-    children = arraySeq[JsDynamic](p.resources),
-    expanded = p.isExpanded,
-    qtip = p.pathUri
-  )
+  def js(p : Project, mode : Mode.Type) : JsDynamic = {
+    obj(
+      mtype = "Project",
+      text = p.name,
+      pathUri = p.pathUri,
+      name = p.name,
+      uri = p.uri,
+      children = {
+        implicit val m = mode
+        mode match {
+          case Mode.PROJECT => array()
+          case Mode.FOLDER =>
+            arraySeq[JsDynamic](
+              p.resources.filter(p => p._2.isInstanceOf[ProjectFile]))
+          case _ =>
+            arraySeq[JsDynamic](p.resources)
+        }
+      },
+      expanded = p.isExpanded,
+      qtip = p.pathUri)
+  }
   def apply(p : JsObject) : Project = apply(p.dyn)
   def apply(p : JsDynamic) : Project = new Project {
     val data = if (p.data.isUndef) p else p.data
@@ -121,6 +140,7 @@ object JsProject {
       m
     }
     def resources_=(m : Map[String, ProjectResource]) {
+      implicit val mode = Mode.ALL
       val a = arraySeq(m)
       data.children = a
     }
@@ -176,18 +196,26 @@ object JsProjectFolder {
       m
     }
     def resources_=(m : Map[String, ProjectResource]) {
+      implicit val mode = Mode.ALL
       val a = arraySeq(m)
       data.children = a
     }
     def isExpanded : Boolean = data.expanded
     def isExpanded_=(b : Boolean) = data.expanded = b
   }
-  def js(p : ProjectFolder) : JsDynamic = obj(
+  def js(p : ProjectFolder, mode : Mode.Type) : JsDynamic = obj(
     mtype = "ProjectFolder",
     text = p.name,
     name = p.name,
     uri = p.uri,
-    children = arraySeq[JsDynamic](p.resources),
+    children = {
+      val rs =
+        if (mode != Mode.ALL)
+          p.resources.filter(p => p._2.isInstanceOf[ProjectFile])
+        else p.resources
+      implicit val m = mode
+      arraySeq[JsDynamic](rs)
+    },
     expanded = p.isExpanded
   )
 }
