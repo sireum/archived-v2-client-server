@@ -57,6 +57,12 @@ object Ext extends JsObject {
   def tip : `Ext.tip` = ???
 }
 
+trait `Ext.tab.Panel` extends JsObject {
+  def add(component : JsDynamic) : JsObject
+  def add(component : JsArray[JsDynamic]) : JsArray[JsObject]
+  def setActiveTab(tab : JsDynamic) : JsObject
+}
+
 trait `Ext.tree.Panel` extends JsObject {
   def getSelection() : JsArray[JsObject]
 }
