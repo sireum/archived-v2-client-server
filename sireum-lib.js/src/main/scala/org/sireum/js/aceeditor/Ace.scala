@@ -35,6 +35,7 @@ import org.sireum.js._
 
 object ace extends JsObject {
   def edit(id : String) : AceEditor = ???
+  def require(s : String) : JsDynamic = ???
 }
 
 trait AceEditor extends JsObject {
