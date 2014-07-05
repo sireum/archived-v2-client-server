@@ -1,5 +1,6 @@
 package org.sireum.js.project
 
+import org.sireum.project._
 import org.sireum.js._
 import org.sireum.js.extjs._
 
