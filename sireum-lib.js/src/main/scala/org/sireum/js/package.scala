@@ -105,15 +105,4 @@ package object js {
   implicit class Dynamic(val o : Any) extends AnyVal {
     def dyn : js.Dynamic = o.asInstanceOf[js.Dynamic]
   }
-
-  def lastIndexOf(s : String, c : Int) : Int = lastIndexOf(s, c, s.length - 1)
-
-  def lastIndexOf(s : String, c : Int, index : Int) : Int = {
-    var i = index
-    val len = s.length
-    while (0 <= i && i < len && s.charAt(i) != c) {
-      i -= 1
-    }
-    i
-  }
 }
