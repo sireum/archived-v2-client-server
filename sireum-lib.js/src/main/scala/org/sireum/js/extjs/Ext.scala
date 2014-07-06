@@ -62,6 +62,7 @@ trait `Ext.tab.Panel` extends JsObject {
   def add(component : JsArray[JsDynamic]) : JsArray[JsObject]
   def setActiveTab(tab : JsDynamic) : JsObject
   def getActiveTab() : JsObject
+  def remove(component : JsDynamic, autoDestroy : Boolean = true)
 }
 
 trait `Ext.tree.Panel` extends JsObject {
