@@ -18,6 +18,7 @@ import org.eclipse.jetty.websocket.jsr356.server.deploy._
 import org.sireum.option.LaunchServerMode
 import org.sireum.util._
 import org.sireum.option.LaunchServerMode
+import org.eclipse.jetty.server.HttpConnectionFactory
 
 /**
  * @author <a href="mailto:robby@k-state.edu">Robby</a>
@@ -73,7 +74,7 @@ object Server {
 
   def run(option : LaunchServerMode, f : => Unit) {
     val pw = System.out
-    val server = new Server(option.port, option.workers)
+    val server = new Server(option.local, option.port, option.workers)
     if (server.start) {
       if (!option.quiet) {
         pw.println(s"Running server at port: ${option.port}")
@@ -175,7 +176,7 @@ trait ServerUI {
 /**
  * @author <a href="mailto:robby@k-state.edu">Robby</a>
  */
-class Server(port : Int, workers : Int = 1)
+class Server(local : Boolean, port : Int, workers : Int = 1)
     extends ServerService with Logging {
   class ServerUIImpl(
       var mainFrame : javax.swing.JFrame,
@@ -195,7 +196,7 @@ class Server(port : Int, workers : Int = 1)
   @volatile
   var terminated = false
 
-  def this() = this(LaunchServerMode().port)
+  def this() = this(LaunchServerMode().local, LaunchServerMode().port)
 
   def ui = {
     import javax.swing._
@@ -230,7 +231,9 @@ class Server(port : Int, workers : Int = 1)
 
     import Server._
 
-    val server = new JettyServer(port)
+    val server =
+      if (local) new JettyServer(new InetSocketAddress("127.0.0.1", port))
+      else new JettyServer(port)
 
     logger.debug(s"Sireum server is starting at port $port")
 
@@ -340,7 +343,7 @@ class ServerDaemon {
         case _        => new LaunchServerMode()
       }
 
-    val server = new Server(o.port)
+    val server = new Server(false, o.port)
     server.start
     this.server = Some(server)
   }
