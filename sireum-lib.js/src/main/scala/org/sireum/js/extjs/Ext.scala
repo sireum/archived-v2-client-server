@@ -123,6 +123,7 @@ trait `Ext.data.ArrayStore` extends `Ext.data.Store` {
 }
 
 trait `Ext.data.NodeInterface` extends JsObject {
+  def parentNode : JsObject
   def sort(sortFn : JsFunction = null, recursive : Boolean = false,
            suppressEvents : Boolean = false)
   def appendChild(
