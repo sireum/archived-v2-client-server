@@ -49,10 +49,7 @@ trait Project extends ProjectFolderResource {
 
   def isFolder = true
   def name = {
-    var i = pathUri.length - 2
-    while (pathUri.charAt(i) != '/' && i >= 0) {
-      i -= 1
-    }
+    val i = pathUri.lastIndexOf('/', pathUri.length - 2)
     if (i < 0) pathUri
     else pathUri.substring(i + 1, pathUri.length - 1)
   }
