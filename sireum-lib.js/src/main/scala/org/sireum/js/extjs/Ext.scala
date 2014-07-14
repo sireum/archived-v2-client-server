@@ -65,6 +65,11 @@ trait `Ext.tab.Panel` extends JsObject {
   def remove(component : JsDynamic, autoDestroy : Boolean = true)
 }
 
+trait `Ext.form.field.TextArea` extends JsObject {
+  def getValue() : String
+  def setValue(text : String) 
+}
+
 trait `Ext.tree.Panel` extends JsObject {
   def getSelection() : JsArray[JsObject]
 }
