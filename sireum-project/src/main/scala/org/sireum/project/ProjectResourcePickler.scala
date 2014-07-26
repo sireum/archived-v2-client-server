@@ -3,10 +3,9 @@ package org.sireum.project
 
 object ProjectResourcePicklers {
   import upickle._
-  import upickle.Implicits._
   implicit var ProjectResourcePickler : ReadWriter[ProjectResource] = null
   private val ProjectImplName = "ProjectImpl"
-  implicit val ProjectImplPickler = new ReadWriter[ProjectImpl](
+  implicit val ProjectImplPickler = ReadWriter[ProjectImpl](
     o => Js.Object(Seq(("type", writeJs("ProjectImpl")), ("pathUri", writeJs(o.pathUri)), ("isExpanded", writeJs(o.isExpanded)), ("resources", writeJs(o.resources)))),
     { case Js.Object(s) =>
         val m = Map(s : _*) 
@@ -14,7 +13,7 @@ object ProjectResourcePicklers {
     }
   )
   private val ProjectFileImplName = "ProjectFileImpl"
-  implicit val ProjectFileImplPickler = new ReadWriter[ProjectFileImpl](
+  implicit val ProjectFileImplPickler = ReadWriter[ProjectFileImpl](
     o => Js.Object(Seq(("type", writeJs("ProjectFileImpl")), ("name", writeJs(o.name)), ("uri", writeJs(o.uri)), ("mimeType", writeJs(o.mimeType)))),
     { case Js.Object(s) =>
         val m = Map(s : _*) 
@@ -22,14 +21,14 @@ object ProjectResourcePicklers {
     }
   )
   private val ProjectFolderImplName = "ProjectFolderImpl"
-  implicit val ProjectFolderImplPickler = new ReadWriter[ProjectFolderImpl](
+  implicit val ProjectFolderImplPickler = ReadWriter[ProjectFolderImpl](
     o => Js.Object(Seq(("type", writeJs("ProjectFolderImpl")), ("name", writeJs(o.name)), ("uri", writeJs(o.uri)), ("isExpanded", writeJs(o.isExpanded)), ("resources", writeJs(o.resources)))),
     { case Js.Object(s) =>
         val m = Map(s : _*) 
         ProjectFolderImpl(readJs[String](m("name")), readJs[String](m("uri")), readJs[Boolean](m("isExpanded")), readJs[Map[String,ProjectResource]](m("resources"))) 
     }
   )
-  ProjectResourcePickler = new ReadWriter[ProjectResource](
+  ProjectResourcePickler = ReadWriter[ProjectResource](
     _ match {
       case o : ProjectImpl => ProjectImplPickler.write(o)
       case o : ProjectFileImpl => ProjectFileImplPickler.write(o)
