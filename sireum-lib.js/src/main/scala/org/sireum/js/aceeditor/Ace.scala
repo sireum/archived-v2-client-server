@@ -56,6 +56,11 @@ trait AceEditSession extends JsObject {
   def setMode(mode : String)
   def setValue(text : String)
   def getValue() : String
+  def addGutterDecoration(line : Int, className : String)
+  def clearBreakpoint(line : Int)
+  def clearBreakpoints()
+  def removeGutterDecoration(line : Int, className : String)
+  def setBreakPoint(line : Int, className : String)
 }
 
 trait AceKeyBinding extends JsObject {
