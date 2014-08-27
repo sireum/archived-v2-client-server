@@ -56,6 +56,7 @@ trait AceEditSession extends JsObject {
   def setMode(mode : String)
   def setValue(text : String)
   def getValue() : String
+  //these methods allow the addtion of css classes to gutter cells
   def addGutterDecoration(line : Int, className : String)
   def clearBreakpoint(line : Int)
   def clearBreakpoints()
