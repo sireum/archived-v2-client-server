@@ -6,24 +6,24 @@ object ProjectResourcePicklers {
   implicit var ProjectResourcePickler : ReadWriter[ProjectResource] = null
   private val ProjectImplName = "ProjectImpl"
   implicit val ProjectImplPickler = ReadWriter[ProjectImpl](
-    o => Js.Object(Seq(("type", writeJs("ProjectImpl")), ("pathUri", writeJs(o.pathUri)), ("isExpanded", writeJs(o.isExpanded)), ("resources", writeJs(o.resources)))),
-    { case Js.Object(s) =>
+    o => Js.Obj(("type", writeJs("ProjectImpl")), ("pathUri", writeJs(o.pathUri)), ("isExpanded", writeJs(o.isExpanded)), ("resources", writeJs(o.resources))),
+    { case Js.Obj(s@_*) =>
         val m = Map(s : _*) 
         ProjectImpl(readJs[String](m("pathUri")), readJs[Boolean](m("isExpanded")), readJs[Map[String,ProjectResource]](m("resources"))) 
     }
   )
   private val ProjectFileImplName = "ProjectFileImpl"
   implicit val ProjectFileImplPickler = ReadWriter[ProjectFileImpl](
-    o => Js.Object(Seq(("type", writeJs("ProjectFileImpl")), ("name", writeJs(o.name)), ("uri", writeJs(o.uri)), ("mimeType", writeJs(o.mimeType)))),
-    { case Js.Object(s) =>
+    o => Js.Obj(("type", writeJs("ProjectFileImpl")), ("name", writeJs(o.name)), ("uri", writeJs(o.uri)), ("mimeType", writeJs(o.mimeType))),
+    { case Js.Obj(s@_*) =>
         val m = Map(s : _*) 
         ProjectFileImpl(readJs[String](m("name")), readJs[String](m("uri")), readJs[String](m("mimeType"))) 
     }
   )
   private val ProjectFolderImplName = "ProjectFolderImpl"
   implicit val ProjectFolderImplPickler = ReadWriter[ProjectFolderImpl](
-    o => Js.Object(Seq(("type", writeJs("ProjectFolderImpl")), ("name", writeJs(o.name)), ("uri", writeJs(o.uri)), ("isExpanded", writeJs(o.isExpanded)), ("resources", writeJs(o.resources)))),
-    { case Js.Object(s) =>
+    o => Js.Obj(("type", writeJs("ProjectFolderImpl")), ("name", writeJs(o.name)), ("uri", writeJs(o.uri)), ("isExpanded", writeJs(o.isExpanded)), ("resources", writeJs(o.resources))),
+    { case Js.Obj(s@_*) =>
         val m = Map(s : _*) 
         ProjectFolderImpl(readJs[String](m("name")), readJs[String](m("uri")), readJs[Boolean](m("isExpanded")), readJs[Map[String,ProjectResource]](m("resources"))) 
     }
@@ -35,7 +35,7 @@ object ProjectResourcePicklers {
       case o : ProjectFolderImpl => ProjectFolderImplPickler.write(o)
     },
     {
-      case o @ Js.Object(s) =>
+      case o @ Js.Obj(s@_*) =>
         readJs[String](s.find(_._1 == "type").get._2) match {
           case `ProjectImplName` => ProjectImplPickler.read(o)
           case `ProjectFileImplName` => ProjectFileImplPickler.read(o)
