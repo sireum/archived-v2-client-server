@@ -119,9 +119,7 @@ trait `Ext.data.Store` extends JsObject {
 }
 
 trait `Ext.data.TreeStore` extends `Ext.data.Store` {
-  def setAutoSort(b : Boolean)
-  def setRoot(n : JsDynamic)
-  def getRoot() : JsObject
+  def root : `Ext.data.NodeInterface`
 }
 
 trait `Ext.data.ArrayStore` extends `Ext.data.Store` {
@@ -130,6 +128,7 @@ trait `Ext.data.ArrayStore` extends `Ext.data.Store` {
 trait `Ext.data.NodeInterface` extends JsObject {
   def parentNode : JsObject
   def childeNodes : JsArray[JsObject]
+  def findChild(attr : String, value : JsObject)
   def sort(sortFn : JsFunction = null, recursive : Boolean = false,
            suppressEvents : Boolean = false)
   def appendChild(
