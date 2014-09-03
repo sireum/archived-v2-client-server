@@ -120,6 +120,7 @@ trait `Ext.data.Store` extends JsObject {
 
 trait `Ext.data.TreeStore` extends `Ext.data.Store` {
   def root : `Ext.data.NodeInterface`
+  def setRoot(root : JsObject)
 }
 
 trait `Ext.data.ArrayStore` extends `Ext.data.Store` {
