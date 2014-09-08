@@ -115,6 +115,7 @@ trait `Ext.data.Store` extends JsObject {
   def removeAt(index : Int, count : Int = 1)
   def add(o : JsDynamic)
   def removeAll()
+  def sync()
   def loadRawData[T](a : JsArray[JsArray[T]])
 }
 
