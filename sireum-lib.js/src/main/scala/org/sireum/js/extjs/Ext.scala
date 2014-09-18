@@ -94,10 +94,12 @@ trait ExtComponentQuery extends JsObject {
 }
 
 trait `Ext.Button` extends JsObject {
+  def pressed : Boolean 
   def setGlyph(x : String)
   def setTooltip(tip : String)
   def setText(text : String)
   def setDisabled(b : Boolean)
+  def toggle(b : Boolean)
 }
 
 trait `Ext.EventObject` extends JsObject {
