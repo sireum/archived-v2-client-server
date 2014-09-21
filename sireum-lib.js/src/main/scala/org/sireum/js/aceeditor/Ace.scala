@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.sireum.js.aceeditor
 
 import org.sireum.js._
+import scala.scalajs.js.annotation.JSName
 
 object ace extends JsObject {
   def edit(id : String) : AceEditor = ???
@@ -52,6 +53,11 @@ trait Position extends JsObject {
   def column : Int
 }
 
+@JSName("Range")
+class AceRange(startRow : Int, startCol : Int, endRow : Int, endCol : Int) extends JsObject {
+  
+}
+
 trait AceEditSession extends JsObject {
   def setMode(mode : String)
   def setValue(text : String)
@@ -62,6 +68,9 @@ trait AceEditSession extends JsObject {
   def clearBreakpoints()
   def removeGutterDecoration(line : Int, className : String)
   def setBreakpoint(line : Int, className : String)
+  def addMarker(rng : AceRange, cls : String, typ : String, inFront : Boolean)
+  def getMarkers(inFront : Boolean) : JsObject
+  def removeMarker(id : JsNumber)
 }
 
 trait AceKeyBinding extends JsObject {
