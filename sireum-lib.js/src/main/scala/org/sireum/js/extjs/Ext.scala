@@ -145,10 +145,14 @@ trait `Ext.Img` extends JsObject {
   def setSrc(src : String)
 }
 
-trait `Ext.menu.CheckItem` extends JsObject {
-  def checked : Boolean
+trait `Ext.menu.Item` extends JsObject {
   def text : String
   def setDisabled(disabled : Boolean)
+  def setText(text : String)
+}
+
+trait `Ext.menu.CheckItem` extends `Ext.menu.Item` {
+  def checked : Boolean
   def setChecked(checked : Boolean, suppressEvents : Boolean = false)
 }
 
