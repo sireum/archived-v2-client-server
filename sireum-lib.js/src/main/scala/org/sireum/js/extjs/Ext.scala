@@ -63,6 +63,7 @@ trait `Ext.tab.Panel` extends JsObject {
   def setActiveTab(tab : JsDynamic) : JsObject
   def getActiveTab() : JsObject
   def remove(component : JsDynamic, autoDestroy : Boolean = true)
+  def setTitle(title : String)
 }
 
 trait `Ext.form.field.TextArea` extends JsObject {
