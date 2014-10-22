@@ -46,6 +46,19 @@ trait AceEditor extends JsObject {
   def keyBinding : AceKeyBinding
   def setKeyboardHandler(kh : String)
   def getCursorPosition() : Position
+  def setReadOnly(readOnly : Boolean)
+  def getReadOnly() : Boolean
+}
+
+object AceDuctWorks {
+  //JsName does not suffice here
+  //addtionally mixin methods can't be used in JsObject traits
+  //this forces us to use duct typing for this
+  def onChange(editor : AceEditSession, func : JsObject => Unit) {
+    console.log("entered onChange")
+    console.log(editor.dyn.on)
+    console.log(editor.dyn.on("change", func))
+  }
 }
 
 trait Position extends JsObject {
