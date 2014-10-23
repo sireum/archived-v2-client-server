@@ -55,9 +55,7 @@ object AceDuctWorks {
   //addtionally mixin methods can't be used in JsObject traits
   //this forces us to use duct typing for this
   def onChange(editor : AceEditSession, func : JsObject => Unit) {
-    console.log("entered onChange")
-    console.log(editor.dyn.on)
-    console.log(editor.dyn.on("change", func))
+    editor.dyn.on("change", func)
   }
 }
 
