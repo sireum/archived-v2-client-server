@@ -35,19 +35,19 @@ import org.sireum.js._
 import scala.scalajs.js.annotation.JSName
 
 object ace extends JsObject {
-  def edit(id : String) : AceEditor = ???
-  def require(s : String) : JsDynamic = ???
+  def edit(id : String) : AceEditor = scala.scalajs.js.native
+  def require(s : String) : JsDynamic = scala.scalajs.js.native
 }
 
 trait AceEditor extends JsObject {
-  def getSession() : AceEditSession
-  def focus()
-  def setTheme(theme : String)
-  def keyBinding : AceKeyBinding
-  def setKeyboardHandler(kh : String)
-  def getCursorPosition() : Position
-  def setReadOnly(readOnly : Boolean)
-  def getReadOnly() : Boolean
+  def getSession() : AceEditSession = scala.scalajs.js.native
+  def focus() : Unit = scala.scalajs.js.native
+  def setTheme(theme : String) : Unit = scala.scalajs.js.native
+  def keyBinding : AceKeyBinding = scala.scalajs.js.native
+  def setKeyboardHandler(kh : String) : Unit = scala.scalajs.js.native
+  def getCursorPosition() : Position = scala.scalajs.js.native
+  def setReadOnly(readOnly : Boolean) : Unit = scala.scalajs.js.native
+  def getReadOnly() : Boolean = scala.scalajs.js.native
 }
 
 object AceDuctWorks {
@@ -60,27 +60,27 @@ object AceDuctWorks {
 }
 
 trait Position extends JsObject {
-  def row : Int
-  def column : Int
+  def row : Int = scala.scalajs.js.native
+  def column : Int = scala.scalajs.js.native
 }
 
 trait AceEditSession extends JsObject {
-  def setMode(mode : String)
-  def setValue(text : String)
-  def getValue() : String
+  def setMode(mode : String) : Unit = scala.scalajs.js.native
+  def setValue(text : String) : Unit = scala.scalajs.js.native
+  def getValue() : String = scala.scalajs.js.native
   //these methods allow the addtion of css classes to gutter cells
-  def addGutterDecoration(line : Int, className : String)
-  def clearBreakpoint(line : Int)
-  def clearBreakpoints()
-  def removeGutterDecoration(line : Int, className : String)
-  def setBreakpoint(line : Int, className : String)
-  def addMarker(rng : JsDynamic, cls : String, typ : String, inFront : Boolean)
-  def getMarkers(inFront : Boolean) : JsObject
-  def removeMarker(id : JsNumber)
+  def addGutterDecoration(line : Int, className : String) : Unit = scala.scalajs.js.native
+  def clearBreakpoint(line : Int) : Unit = scala.scalajs.js.native
+  def clearBreakpoints() : Unit = scala.scalajs.js.native
+  def removeGutterDecoration(line : Int, className : String) : Unit = scala.scalajs.js.native
+  def setBreakpoint(line : Int, className : String) : Unit = scala.scalajs.js.native
+  def addMarker(rng : JsDynamic, cls : String, typ : String, inFront : Boolean) : Unit = scala.scalajs.js.native
+  def getMarkers(inFront : Boolean) : JsObject = scala.scalajs.js.native
+  def removeMarker(id : JsNumber) : Unit = scala.scalajs.js.native
 }
 
 trait AceKeyBinding extends JsObject {
-  var onCommandKey : JsFunction3[AceKeyEvent, Int, Int, _]
+  var onCommandKey : JsFunction3[AceKeyEvent, Int, Int, _] = scala.scalajs.js.native
 }
 
 trait AceKeyEvent extends JsObject {

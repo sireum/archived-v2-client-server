@@ -34,7 +34,7 @@ package org.sireum.js.alertify
 import org.sireum.js._
 
 object alertify extends JsObject {
-  def alert(message : String) : JsAny = ???
-  def confirm(message : String, fn : JsFunction1[Boolean, _]) : JsAny = ???
-  def log(message : String, kind : String, time : Int) : JsAny = ???
+  def alert(message : String) : JsAny = scala.scalajs.js.native
+  def confirm(message : String, fn : JsFunction1[Boolean, _]) : JsAny = scala.scalajs.js.native
+  def log(message : String, kind : String, time : Int) : JsAny = scala.scalajs.js.native
 }

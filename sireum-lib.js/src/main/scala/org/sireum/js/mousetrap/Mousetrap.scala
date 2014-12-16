@@ -35,8 +35,8 @@ import org.sireum.js._
 import scala.scalajs.js.annotation.JSName
 
 object Mousetrap extends JsObject {
-  def bind(keys : JsArray[JsString], fn : JsFunction1[MousetrapEvent, Boolean]) : JsAny = ???
-  def bind(key : String, fn : JsFunction1[MousetrapEvent, Boolean]) : JsAny = ???
+  def bind(keys : JsArray[JsString], fn : JsFunction1[MousetrapEvent, Boolean]) : JsAny = scala.scalajs.js.native
+  def bind(key : String, fn : JsFunction1[MousetrapEvent, Boolean]) : JsAny = scala.scalajs.js.native
 }
 
 trait MousetrapEvent extends JsObject

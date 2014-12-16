@@ -41,10 +41,10 @@ object Dagre {
 trait Graph extends JsObject
 
 class `dagreD3.Digraph` extends Graph {
-  def addNode(id : String, label : JsDynamic) : JsAny = ???
-  def addEdge(id : String, sourceId : String, targetId : String, label : JsDynamic) : JsAny = ???
+  def addNode(id : String, label : JsDynamic) : JsAny = scala.scalajs.js.native
+  def addEdge(id : String, sourceId : String, targetId : String, label : JsDynamic) : JsAny = scala.scalajs.js.native
 }
 
 class `dagreD3.Renderer` extends JsObject {
-  def run(g : Graph, target : JsAny) : JsAny = ???
+  def run(g : Graph, target : JsAny) : JsAny = scala.scalajs.js.native
 }

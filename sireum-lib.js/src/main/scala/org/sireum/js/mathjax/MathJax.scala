@@ -34,9 +34,9 @@ package org.sireum.js.mathjax
 import org.sireum.js._
 
 object MathJax extends JsObject {
-  def Hub : MathJaxHub = ???
+  def Hub : MathJaxHub = scala.scalajs.js.native
 }
 
 trait MathJaxHub extends JsObject {
-  def Queue(callback : JsArray[JsAny]*) : JsAny = ???
+  def Queue(callback : JsArray[JsAny]*) : JsAny = scala.scalajs.js.native
 }

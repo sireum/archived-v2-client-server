@@ -86,16 +86,16 @@ package object js {
   def fun5[T0, T1, T2, T3, T4, T5](x : Function5[T0, T1, T2, T3, T4, T5]) : js.Function5[T0, T1, T2, T3, T4, T5] = x
 
   implicit class IsUndefJs(val o : JsAny) extends AnyVal {
-    def isUndef = o.isInstanceOf[JsUndefined]
+    def isUndef = o.isInstanceOf[JsUndefined] || o == null
   }
 
   implicit class IsUndef(val o : Any) extends AnyVal {
-    def isUndef = o.isInstanceOf[JsUndefined]
+    def isUndef = o.isInstanceOf[JsUndefined] || o == null
   }
 
   trait RichNode extends dom.Node {
-    override def parentNode : RichNode = ???
-    def getElementsByClassName(className : String) : dom.HTMLCollection = ???
+    override def parentNode : RichNode = scala.scalajs.js.native
+    def getElementsByClassName(className : String) : dom.HTMLCollection = scala.scalajs.js.native
   }
 
   implicit class DynamicNode(val o : dom.Node) extends AnyVal {
@@ -104,5 +104,12 @@ package object js {
 
   implicit class Dynamic(val o : Any) extends AnyVal {
     def dyn : js.Dynamic = o.asInstanceOf[js.Dynamic]
+  }
+  
+  implicit class StorageHelper(val o : org.scalajs.dom.Storage) extends AnyVal {
+    def apply(key : String) : String = o.getItem(key)
+    def update(key : String, value : String) = o.setItem(key, value)
+    def update(key : String, value : Boolean) = o.setItem(key, value.toString)
+    def update(key : String, value : Int) = o.setItem(key, value.toString)
   }
 }

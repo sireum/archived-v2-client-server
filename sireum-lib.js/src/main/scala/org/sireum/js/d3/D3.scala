@@ -34,7 +34,7 @@ package org.sireum.js.d3
 import org.sireum.js._
 
 object d3 extends JsObject {
-  def select(s : String) : JsDynamic = ???
-  def behavior : JsDynamic = ???
-  def event : JsDynamic = ???
+  def select(s : String) : JsDynamic = scala.scalajs.js.native
+  def behavior : JsDynamic = scala.scalajs.js.native
+  def event : JsDynamic = scala.scalajs.js.native
 }

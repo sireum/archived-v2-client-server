@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.sireum.js
 
 package object filesaver extends scala.scalajs.js.GlobalScope {
-  def saveAs(content : JsAny, filename : String) : JsAny = ???
+  def saveAs(content : JsAny, filename : String) : JsAny = scala.scalajs.js.native
 
   trait FileSaver extends JsObject {
 

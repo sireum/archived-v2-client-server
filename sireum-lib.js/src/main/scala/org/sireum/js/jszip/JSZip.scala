@@ -35,12 +35,12 @@ import org.sireum.js._
 
 class JSZip(o : JsDynamic = null) extends JsObject {
 
-  def file(name : String, content : String) : JsAny = ???
-  def generate(options : JsDynamic = null) : JsAny = ???
-  def files : JsObject = ???
-  def file(name : String) : `JSZip.File` = ???
+  def file(name : String, content : String) : JsAny = scala.scalajs.js.native
+  def generate(options : JsDynamic = null) : JsAny = scala.scalajs.js.native
+  def files : JsObject = scala.scalajs.js.native
+  def file(name : String) : `JSZip.File` = scala.scalajs.js.native
 }
 
 trait `JSZip.File` extends JsObject {
-  def asText() : String
+  def asText() : String = scala.scalajs.js.native
 }

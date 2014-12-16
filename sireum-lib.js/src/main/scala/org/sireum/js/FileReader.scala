@@ -32,8 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.sireum.js
 
 class FileReader extends JsObject {
-  var onerror : JsFunction1[JsDynamic, JsAny] = ???
-  var onload : JsFunction1[JsDynamic, JsAny] = ???
-  var onloadend : JsFunction1[JsDynamic, JsAny] = ???
-  def readAsArrayBuffer(o : JsDynamic) : JsAny = ???
+  var onerror : JsFunction1[JsDynamic, JsAny] = scala.scalajs.js.native
+  var onload : JsFunction1[JsDynamic, JsAny] = scala.scalajs.js.native
+  var onloadend : JsFunction1[JsDynamic, JsAny] = scala.scalajs.js.native
+  def readAsArrayBuffer(o : JsDynamic) : JsAny = scala.scalajs.js.native
 }
