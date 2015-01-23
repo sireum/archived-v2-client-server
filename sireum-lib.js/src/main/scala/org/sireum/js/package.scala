@@ -43,6 +43,7 @@ package object js {
   type JsUndefined = js.Undefined
   type JsNumber = js.Number
   type JsString = js.String
+  type JsDictionary[T] = js.Dictionary[T]
   type JsBoolean = js.Boolean
   type JsArray[T] = js.Array[T]
   type JsFunction = js.Function
