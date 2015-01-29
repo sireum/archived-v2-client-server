@@ -114,4 +114,9 @@ package object js {
     def update(key : String, value : Boolean) = o.setItem(key, value.toString)
     def update(key : String, value : Int) = o.setItem(key, value.toString)
   }
+  
+  trait JsConvertable[T] {
+    def to(x : T): JsAny
+    def from(x : JsAny): T
+  }
 }
