@@ -60,12 +60,12 @@ class KeyValueDB(dbname : String) {
     
   }
   
-  def by[T](key : String): KeyValueStore[T] = {
-    return new KeyValueStoreImpl[T](key, this)
+  def by[T](key : String)(implicit conv: JsConvertable[T]): KeyValueStore[T] = {
+    return new KeyValueStoreImpl[T](key, this, conv)
   }
 }
 
-private class KeyValueStoreImpl[T](key: String, dbHandle: KeyValueDB) extends KeyValueStore[T] {
+private class KeyValueStoreImpl[T](key: String, dbHandle: KeyValueDB, conv: JsConvertable[T]) extends KeyValueStore[T] {
   import KeyValueDB._
   
   def store(value : T) {
@@ -76,7 +76,7 @@ private class KeyValueStoreImpl[T](key: String, dbHandle: KeyValueDB) extends Ke
     console.log(dbHandle.db)
     val trans = dbHandle.db.transaction(JsArray(storeName), "readwrite")
     val store = trans.objectStore(storeName)
-    store.put(obj(keyName -> key, valueName -> value.dyn))
+    store.put(obj(keyName -> key, valueName -> conv.to(value)))
     trans.oncomplete = (e : DomEvent) => {
       console.log(s"stored: $key -> ${value.toString()}")
       oncomplete(e)
@@ -89,10 +89,9 @@ private class KeyValueStoreImpl[T](key: String, dbHandle: KeyValueDB) extends Ke
     val index = store.index("by_key")
     val request = index.get(key)
     request.onsuccess = (event : DomEvent) => {
-      
       console.log(s"loaded: $key ->", request.result)
       if(request.result.dyn != undefined.dyn) {
-        func(request.result.dyn.selectDynamic(valueName).asInstanceOf[T])
+        func(conv.from(request.result.dyn.selectDynamic(valueName)))
       }
     }
   }
