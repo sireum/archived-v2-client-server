@@ -2,10 +2,10 @@
 Copyright (c) 2014, Robby, Kansas State University
 All rights reserved.
 
-Redistribution and use in source and binary forms, with or without 
+Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
-1. Redistributions of source code must retain the above copyright notice, 
+1. Redistributions of source code must retain the above copyright notice,
    this list of conditions and the following disclaimer.
 
 2. Redistributions in binary form must reproduce the above copyright
@@ -26,7 +26,7 @@ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
 PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 package org.sireum
@@ -40,11 +40,11 @@ package object js {
 
   type JsAny = js.Any
   type JsObject = js.Object
-  type JsUndefined = js.Undefined
-  type JsNumber = js.Number
-  type JsString = js.String
+  type JsUndefined = Unit
+  type JsNumber = Double
+  type JsString = String
   type JsDictionary[T] = js.Dictionary[T]
-  type JsBoolean = js.Boolean
+  type JsBoolean = Boolean
   type JsArray[T] = js.Array[T]
   type JsFunction = js.Function
   type JsFunction0[T0] = js.Function0[T0]
@@ -56,9 +56,9 @@ package object js {
   type JsDynamic = js.Dynamic
 
   type DomEvent = dom.Event
-  type HTMLElement = dom.HTMLElement
+  type HTMLElement = dom.html.Element
 
-  val undefined : js.Undefined = ()
+  val undefined : JsUndefined = ()
   val document = dom.document
   val window = dom.window
   val console = dom.console
@@ -97,26 +97,26 @@ package object js {
 
   trait RichNode extends dom.Node {
     override def parentNode : RichNode = scala.scalajs.js.native
-    def getElementsByClassName(className : String) : dom.HTMLCollection = scala.scalajs.js.native
+    def getElementsByClassName(className : String) : dom.html.Collection = scala.scalajs.js.native
   }
 
-  implicit class DynamicNode(val o : dom.Node) extends AnyVal {
+  implicit class DynamicNode(val o : org.scalajs.dom.Node) extends AnyVal {
     def style : js.Dynamic = o.asInstanceOf[js.Dynamic].style
   }
 
   implicit class Dynamic(val o : Any) extends AnyVal {
     def dyn : js.Dynamic = o.asInstanceOf[js.Dynamic]
   }
-  
+
   implicit class StorageHelper(val o : org.scalajs.dom.Storage) extends AnyVal {
     def apply(key : String) : String = o.getItem(key)
     def update(key : String, value : String) = o.setItem(key, value)
     def update(key : String, value : Boolean) = o.setItem(key, value.toString)
     def update(key : String, value : Int) = o.setItem(key, value.toString)
   }
-  
+
   trait JsConvertable[T] {
-    def to(x : T): JsAny
-    def from(x : JsAny): T
+    def to(x : T) : JsAny
+    def from(x : JsAny) : T
   }
 }
