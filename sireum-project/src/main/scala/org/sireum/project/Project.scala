@@ -21,10 +21,18 @@ trait ProjectRoot {
 final case class ProjectRootImpl(var projects : Map[String, Project])
   extends ProjectRoot
 
+final object ProjectResource {
+  val jsMap = Seq(
+    classOf[ProjectFileImpl],
+    classOf[ProjectFolderImpl],
+    classOf[ProjectImpl]
+  )
+}
+  
 /**
  * @author <a href="mailto:robby@k-state.edu">Robby</a>
  */
-trait ProjectResource {
+abstract class ProjectResource {
   def name : String
   def uri : String
   def impl : ProjectResource
