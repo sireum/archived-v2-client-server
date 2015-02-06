@@ -6,5 +6,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/sireum-lib"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/sireum-util"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/sireum-option"/>
+	<classpathentry exported="true" kind="lib" path="lib/microjson.jar" sourcepath="lib/microjson-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/prickle.jar" sourcepath="lib/prickle-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

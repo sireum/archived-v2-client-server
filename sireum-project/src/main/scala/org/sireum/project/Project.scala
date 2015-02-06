@@ -1,12 +1,33 @@
 /*
-Copyright (c) 2014 Robby, Kansas State University.        
-All rights reserved. This program and the accompanying materials      
-are made available under the terms of the Eclipse Public License v1.0 
-which accompanies this distribution, and is available at              
-http://www.eclipse.org/legal/epl-v10.html                             
+Copyright (c) 2014-2015 Robby, Kansas State University.
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License v1.0
+which accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html
 */
 
 package org.sireum.project
+
+/**
+ * @author <a href="mailto:robby@k-state.edu">Robby</a>
+ */
+object ProjectRoot {
+  import prickle._
+
+  implicit val projectRootPickler : PicklerPair[ProjectRoot] = {
+    implicit val projectPickler : PicklerPair[Project] =
+      CompositePickler[Project].concreteType[ProjectImpl]
+
+    CompositePickler[ProjectRoot].concreteType[ProjectRootImpl]
+  }
+
+  implicit class ToJson(val m : ProjectRoot) extends AnyVal {
+    def toJson : String = Pickle.intoString(m)
+  }
+  implicit class FromJson(val s : String) extends AnyVal {
+    def fromJson : ProjectRoot = Unpickle[ProjectRoot].fromString(s).get
+  }
+}
 
 /**
  * @author <a href="mailto:robby@k-state.edu">Robby</a>
@@ -20,6 +41,26 @@ trait ProjectRoot {
  */
 final case class ProjectRootImpl(var projects : Map[String, Project])
   extends ProjectRoot
+
+/**
+ * @author <a href="mailto:robby@k-state.edu">Robby</a>
+ */
+object ProjectResource {
+  import prickle._
+
+  implicit val projectResourcePickler : PicklerPair[ProjectResource] =
+    CompositePickler[ProjectResource].
+      concreteType[ProjectImpl].
+      concreteType[ProjectFileImpl].
+      concreteType[ProjectFolderImpl]
+
+  implicit class ToJson(val m : ProjectResource) extends AnyVal {
+    def toJson : String = Pickle.intoString(m)
+  }
+  implicit class FromJson(val s : String) extends AnyVal {
+    def fromJson : ProjectResource = Unpickle[ProjectResource].fromString(s).get
+  }
+}
 
 final object ProjectResource {
   val jsMap = Seq(
