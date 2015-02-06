@@ -34,17 +34,26 @@ package org.sireum.js.dagre
 import org.sireum.js._
 
 object Dagre {
-  def newD3Digraph = new `dagreD3.graphlib.Graph`
+  def newD3Digraph =
+    new `dagreD3.graphlib.Graph`(obj()).
+      setGraph(obj()).
+      setDefaultEdgeLabel(fun0 { () => obj() })
+  def newD3Digraph(gOpt : JsObject, fEdgeLabel : JsFunction0[JsDynamic]) =
+    new `dagreD3.graphlib.Graph`(gOpt).
+      setGraph(obj()).
+      setDefaultEdgeLabel(fEdgeLabel)
   def newD3Renderer = new `dagreD3.render`
 }
 
 trait Graph extends JsObject
 
-class `dagreD3.graphlib.Graph` extends Graph {
+class `dagreD3.graphlib.Graph`(opt : JsObject) extends Graph {
+  def setGraph(o : JsDynamic) : `dagreD3.graphlib.Graph` = scala.scalajs.js.native
+  def setDefaultEdgeLabel(f : JsFunction0[JsDynamic]) : `dagreD3.graphlib.Graph` = scala.scalajs.js.native
   def setNode(id : String, label : JsDynamic) : JsAny = scala.scalajs.js.native
-  def setEdge(id : String, sourceId : String, targetId : String, label : JsDynamic) : JsAny = scala.scalajs.js.native
+  def setEdge(sourceId : String, targetId : String, attr : JsDynamic = null) : JsAny = scala.scalajs.js.native
 }
 
 class `dagreD3.render` extends JsObject {
-  def apply(g : Graph, target : JsAny) : JsAny = scala.scalajs.js.native
+  def apply(target : JsAny, g : Graph) : JsAny = scala.scalajs.js.native
 }
