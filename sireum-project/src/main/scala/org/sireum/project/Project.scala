@@ -60,16 +60,13 @@ object ProjectResource {
   implicit class FromJson(val s : String) extends AnyVal {
     def fromJson : ProjectResource = Unpickle[ProjectResource].fromString(s).get
   }
-}
-
-final object ProjectResource {
   val jsMap = Seq(
     classOf[ProjectFileImpl],
     classOf[ProjectFolderImpl],
     classOf[ProjectImpl]
   )
 }
-  
+
 /**
  * @author <a href="mailto:robby@k-state.edu">Robby</a>
  */
