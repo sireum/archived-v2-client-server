@@ -35,7 +35,13 @@ object KeyValueDB {
  */
 class KeyValueDB(dbname : String) {
   private[indexeddb] var db : Database = null
+  private var pending = List[Database => Unit]()
+  
   import KeyValueDB._
+  
+  def addPending(func : Database => Unit) {
+    pending = func :: pending
+  }
 
   {
     val request = window.indexedDB.open(dbname, 1)
@@ -54,6 +60,10 @@ class KeyValueDB(dbname : String) {
       db = request.result.asInstanceOf[Database]
       console.log("database '" + dbname + "' has been opened")
       console.log(db)
+      //now we need to execute all pending actions
+      pending foreach {func =>
+        func(db)
+      }
       //console.log("object stores: " + db.objectStoreNames.toString())
     }
 
@@ -72,26 +82,35 @@ private class KeyValueStoreImpl[T](key : String, dbHandle : KeyValueDB, conv : J
   }
 
   def store(value : T, oncomplete : DomEvent => Unit) {
-    console.log(dbHandle.db)
-    val trans = dbHandle.db.transaction(JsArray(storeName), "readwrite")
-    val store = trans.objectStore(storeName)
-    store.put(obj(keyName -> key, valueName -> conv.to(value)))
-    trans.oncomplete = (e : DomEvent) => {
-      console.log(s"stored: $key -> ${value.toString()}")
-      oncomplete(e)
+    def wrapper(db : Database) {
+      console.log(dbHandle.db)
+      val trans = dbHandle.db.transaction(JsArray(storeName), "readwrite")
+      val store = trans.objectStore(storeName)
+      store.put(obj(keyName -> key, valueName -> conv.to(value)))
+      trans.oncomplete = (e : DomEvent) => {
+        console.log(s"stored: $key -> ${value.toString()}")
+        oncomplete(e)
+      }
     }
+    if(dbHandle.db != null) wrapper(dbHandle.db)
+    else dbHandle.addPending(wrapper)
   }
 
   def load(func : T => Unit) {
-    val trans = dbHandle.db.transaction(JsArray(storeName), "readonly")
-    val store = trans.objectStore(storeName)
-    val index = store.index("by_key")
-    val request = index.get(key)
-    request.onsuccess = (event : DomEvent) => {
-      console.log(s"loaded: $key ->", request.result)
-      if (request.result.dyn != undefined.dyn) {
-        func(conv.from(request.result.dyn.selectDynamic(valueName)))
+    //a wrapper is used in case the database is not ready
+    def wrapper(db : Database) {
+      val trans = db.transaction(JsArray(storeName), "readonly")
+      val store = trans.objectStore(storeName)
+      val index = store.index("by_key")
+      val request = index.get(key)
+      request.onsuccess = (event : DomEvent) => {
+        console.log(s"loaded: $key ->", request.result)
+        if (request.result.dyn != undefined.dyn) {
+          func(conv.from(request.result.dyn.selectDynamic(valueName)))
+        }
       }
     }
+    if(dbHandle.db != null) wrapper(dbHandle.db)
+    else dbHandle.addPending(wrapper)
   }
 }
