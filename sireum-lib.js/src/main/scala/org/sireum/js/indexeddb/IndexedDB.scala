@@ -88,7 +88,7 @@ private class KeyValueStoreImpl[T](key : String, dbHandle : KeyValueDB, conv : J
       val store = trans.objectStore(storeName)
       store.put(obj(keyName -> key, valueName -> conv.to(value)))
       trans.oncomplete = (e : DomEvent) => {
-        console.log(s"stored: $key -> ${value.toString()}")
+        console.log(s"stored: $key -> ", value.dyn)
         oncomplete(e)
       }
     }
@@ -104,10 +104,10 @@ private class KeyValueStoreImpl[T](key : String, dbHandle : KeyValueDB, conv : J
       val index = store.index("by_key")
       val request = index.get(key)
       request.onsuccess = (event : DomEvent) => {
-        console.log(s"loaded: $key ->", request.result)
         if (request.result.dyn != undefined.dyn) {
+          console.log(s"loaded: $key ->", request.result)
           func(conv.from(request.result.dyn.selectDynamic(valueName)))
-        }
+        } else func(null.asInstanceOf[T])
       }
     }
     if(dbHandle.db != null) wrapper(dbHandle.db)
