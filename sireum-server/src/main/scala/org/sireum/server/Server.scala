@@ -148,7 +148,7 @@ object Server {
     val relPath =
       "/" + c.getPackage.getName.split('.').map(x => "..").mkString("/") +
         "/../../lib"
-    val fUri = c.getResource("Server.class").toURI + relPath
+    val fUri = (c.getResource("Server.class").toURI + relPath).replaceAll("target/.*/classes/", "target/")
     try {
       if (fUri.contains(".jar")) {
         sireumHomeLibPath
