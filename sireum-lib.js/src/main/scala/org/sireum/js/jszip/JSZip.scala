@@ -35,6 +35,7 @@ import org.sireum.js._
 
 class JSZip(o : JsDynamic = null) extends JsObject {
 
+  def folder(name : String) : JsAny = scala.scalajs.js.native
   def file(name : String, content : String) : JsAny = scala.scalajs.js.native
   def generate(options : JsDynamic = null) : JsAny = scala.scalajs.js.native
   def files : JsObject = scala.scalajs.js.native
